@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <div v-for="(door, index) in doors" :key="index" @click="openHandler(index)">
+    <div v-for="(door, index) in doors" :key="index" @click="doorPicked(index)">
       <template v-if="!door.opened">
         <img class="door doorClosed" src="../assets/images/door-closed.png" alt="door closed" />
       </template>
@@ -15,17 +15,18 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'game',
   computed: {
-    ...mapGetters(['doors'])
+    ...mapGetters(['doors', 'round'])
   },
   methods: {
-    ...mapMutations(['openDoor']),
-    openHandler(index) {
-      this.openDoor(index)
+    ...mapMutations(['round1', 'round2']),
+    ...mapActions(['game']),
+    doorPicked(index) {
+      this.game(index)
     }
   }
 }
