@@ -1,0 +1,10 @@
+{
+    "name": "monty-hall-vue",
+    "version": "1.0.0",
+    "description": "The game explaining Monty Hall problem",
+    "author": "Evgeny Petryankin",
+    "private": true,
+    "scripts": {
+      "postinstall": "npm install express"
+    }
+}
