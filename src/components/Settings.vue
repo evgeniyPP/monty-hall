@@ -16,38 +16,46 @@
           <label class="range__num" for="range">{{ doors.length }}</label>
         </div>
         <div class="item checkboxWrap">
-          <label for="checkbox">Показывать вероятности?</label>
-          <input type="checkbox" id="checkbox" v-model="isPercents" />
+          <label for="checkbox" style="color: #ccc">Показывать вероятности?</label>
+          <input type="checkbox" id="checkbox" v-model="isPercents" disabled />
         </div>
-        <button class="item" @click="start">Начать</button>
+        <button v-if="round === 0" @click="start">Начать</button>
+        <button v-else @click="restart">Перезапустить</button>
       </div>
     </transition>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'settings',
   data() {
     return {
-      isMenu: true
+      isMenu: true,
+      rangeValue: 3
     }
   },
   computed: {
-    ...mapGetters(['doors', 'isPercents'])
+    ...mapGetters(['round', 'doors', 'isPercents'])
   },
   methods: {
     ...mapMutations(['changeRangeValue', 'startGame']),
+    ...mapActions(['restartGame']),
     changeHandler(e) {
-      this.changeRangeValue(e.target.value)
+      this.rangeValue = e.target.value
+      this.changeRangeValue(this.rangeValue)
     },
     menuToggle() {
       this.isMenu = !this.isMenu
     },
     start(e) {
       this.startGame(e)
+      this.menuToggle()
+    },
+    restart() {
+      this.restartGame(this.rangeValue)
       this.menuToggle()
     }
   }
@@ -81,6 +89,7 @@ export default {
 
 .item {
   margin: 0.5rem 0;
+  font-weight: bold;
 }
 
 label {
@@ -104,5 +113,23 @@ label {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+button {
+  color: #2c3e50;
+  font-weight: bold;
+  text-transform: uppercase;
+  background: #fff;
+  padding: 0.85rem 1rem 0.75rem 1rem;
+  border: 2px solid #2c3e50;
+  border-radius: 6px;
+  display: inline-block;
+  transition: all 0.3s ease 0s;
+  margin-top: 1.5rem;
+}
+
+button:hover {
+  border-radius: 50px;
+  transition: all 0.3s ease 0s;
 }
 </style>

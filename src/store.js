@@ -38,11 +38,6 @@ export default new Vuex.Store({
       }
       state.doors = arr
     },
-    openDoor(state, index) {
-      const arr = [...state.doors]
-      arr[index].opened = true
-      state.doors = arr
-    },
     startGame(state) {
       const random = randomize(state.doors.length)
       const arr = [...state.doors]
@@ -93,6 +88,10 @@ export default new Vuex.Store({
         default:
           null
       }
+    },
+    restartGame(store, rangeValue) {
+      store.commit('changeRangeValue', rangeValue)
+      store.commit('startGame')
     }
   }
 })
