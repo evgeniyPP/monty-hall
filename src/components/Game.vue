@@ -42,6 +42,7 @@ export default {
 
 .door {
   max-width: 100%;
+  cursor: pointer;
 }
 
 .doorClosed {
@@ -78,6 +79,10 @@ export default {
 }
 
 @media screen and (max-width: 360px) {
+  .doorClosed {
+    width: 180px;
+    margin: 1rem 2rem;
+  }
   .price1 {
     bottom: 20px;
     right: calc(118px - (360px - 100vw));

@@ -1,6 +1,12 @@
 <template>
   <div class="wrap">
-    <img class="menu" src="../assets/images/menu.png" alt="menu icon" @click="menuToggle" />
+    <img
+      class="menu"
+      src="../assets/images/menu.png"
+      alt="menu icon"
+      @click="menuToggle"
+      v-if="menuShow"
+    />
     <transition name="fade">
       <div class="settings" v-if="isMenu">
         <div class="item rangeWrap">
@@ -12,6 +18,7 @@
             max="12"
             @change="changeHandler"
             :value="doors.length"
+            :disabled="round !== 3"
           />
           <label class="range__num" for="range">{{ doors.length }}</label>
         </div>
@@ -19,8 +26,9 @@
           <label for="checkbox" style="color: #ccc">Показывать вероятности?</label>
           <input type="checkbox" id="checkbox" v-model="isPercents" disabled />
         </div>
-        <button v-if="round === 0" @click="start">Начать</button>
-        <button v-else @click="restart">Перезапустить</button>
+        <div v-if="round === 3" @click="restart">
+          <Button style="background: #fff">Перезапустить</Button>
+        </div>
       </div>
     </transition>
   </div>
@@ -28,20 +36,25 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import Button from '../assets/Button.vue'
 
 export default {
   name: 'settings',
+  components: { Button },
   data() {
     return {
-      isMenu: true,
+      isMenu: false,
       rangeValue: 3
     }
   },
   computed: {
-    ...mapGetters(['round', 'doors', 'isPercents'])
+    ...mapGetters(['round', 'doors', 'isPercents', 'isRestarted']),
+    menuShow() {
+      return this.round === 3 || this.isRestarted
+    }
   },
   methods: {
-    ...mapMutations(['changeRangeValue', 'startGame']),
+    ...mapMutations(['changeRangeValue']),
     ...mapActions(['restartGame']),
     changeHandler(e) {
       this.rangeValue = e.target.value
@@ -49,10 +62,6 @@ export default {
     },
     menuToggle() {
       this.isMenu = !this.isMenu
-    },
-    start(e) {
-      this.startGame(e)
-      this.menuToggle()
     },
     restart() {
       this.restartGame(this.rangeValue)
@@ -73,6 +82,7 @@ export default {
 .menu {
   max-width: 100%;
   width: 50px;
+  cursor: pointer;
 }
 
 .settings {
@@ -99,6 +109,7 @@ label {
 #range {
   margin-top: 0.5rem;
   margin-right: 0.5rem;
+  cursor: pointer;
 }
 
 .range__num {
@@ -113,23 +124,5 @@ label {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
-}
-
-button {
-  color: #2c3e50;
-  font-weight: bold;
-  text-transform: uppercase;
-  background: #fff;
-  padding: 0.85rem 1rem 0.75rem 1rem;
-  border: 2px solid #2c3e50;
-  border-radius: 6px;
-  display: inline-block;
-  transition: all 0.3s ease 0s;
-  margin-top: 1.5rem;
-}
-
-button:hover {
-  border-radius: 50px;
-  transition: all 0.3s ease 0s;
 }
 </style>

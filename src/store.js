@@ -14,7 +14,11 @@ export default new Vuex.Store({
     ],
     isPercents: false,
     round: 0,
-    result: null
+    result: null,
+    pickedDoor: null,
+    doorSwaped: null,
+    showSidebar: true,
+    isRestarted: false
   },
   getters: {
     doors(state) {
@@ -28,10 +32,20 @@ export default new Vuex.Store({
     },
     result(state) {
       return state.result
+    },
+    doorSwaped(state) {
+      return state.doorSwaped
+    },
+    showSidebar(state) {
+      return state.showSidebar
+    },
+    isRestarted(state) {
+      return state.isRestarted
     }
   },
   mutations: {
     changeRangeValue(state, value) {
+      state.result = null
       const arr = []
       for (let i = 0; i < value; i++) {
         arr.push({ opened: false, win: false })
@@ -44,54 +58,76 @@ export default new Vuex.Store({
       arr[random].win = true
       state.doors = arr
       state.round = 1
+      state.showSidebar = false
     },
-    round1(state, index) {
-      if (state.doors[index].win) {
+    round1(state) {
+      if (state.doors[state.pickedDoor].win) {
         const random = randomize(state.doors.length)
         const checkRandom = num => {
-          if (num === index) {
+          if (num === state.pickedDoor) {
             random = randomize(state.doors.length)
             checkRandom(random)
           }
         }
         checkRandom(random)
         state.doors = state.doors.map((door, i) => {
-          return i === index || i === random ? door : { ...door, opened: true }
+          return i === state.pickedDoor || i === random ? door : { ...door, opened: true }
         })
       } else {
         state.doors = state.doors.map((door, i) => {
-          return i === index || door.win ? door : { ...door, opened: true }
+          return i === state.pickedDoor || door.win ? door : { ...door, opened: true }
         })
       }
-      state.round = 2
+      state.showSidebar = false
     },
-    round2(state, index) {
-      const arr = [...state.doors]
-      arr[index].opened = true
-      state.doors = arr
-      state.round = 3
-    },
-    gameOver(state, index) {
-      state.doors[index].win ? (state.result = 'win') : (state.result = 'lose')
+    round2(state) {
+      state.doors = state.doors.map(door => {
+        return { ...door, opened: true }
+      })
+      state.showSidebar = false
+      state.doors[state.pickedDoor].win ? (state.result = 'win') : (state.result = 'lose')
     }
   },
   actions: {
     game(store, index) {
-      switch (store.state.round) {
-        case 1:
-          store.commit('round1', index)
-          break
-        case 2:
-          store.commit('round2', index)
-          store.commit('gameOver', index)
-          break
-        default:
-          null
+      if (!store.state.isRestarted) {
+        switch (store.state.round) {
+          case 1:
+            store.state.round = 2
+            store.state.pickedDoor = index
+            store.state.showSidebar = true
+            break
+          case 2:
+            store.state.round = 3
+            store.state.doorSwaped = store.state.pickedDoor !== index
+            store.state.pickedDoor = index
+            store.state.showSidebar = true
+            break
+          default:
+            null
+        }
+      } else {
+        switch (store.state.round) {
+          case 1:
+            store.state.pickedDoor = index
+            store.commit('round1')
+            store.state.round = 2
+            break
+          case 2:
+            store.state.round = 3
+            store.state.doorSwaped = store.state.pickedDoor !== index
+            store.state.pickedDoor = index
+            store.commit('round2')
+            break
+          default:
+            null
+        }
       }
     },
     restartGame(store, rangeValue) {
       store.commit('changeRangeValue', rangeValue)
       store.commit('startGame')
+      store.state.isRestarted = true
     }
   }
 })
