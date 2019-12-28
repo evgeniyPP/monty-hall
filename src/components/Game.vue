@@ -76,4 +76,16 @@ export default {
   bottom: 45px;
   right: 130px;
 }
+
+@media screen and (max-width: 360px) {
+  .price1 {
+    bottom: 20px;
+    right: calc(118px - (360px - 100vw));
+  }
+
+  .price2 {
+    bottom: 45px;
+    right: calc(130px - (360px - 100vw));
+  }
+}
 </style>
