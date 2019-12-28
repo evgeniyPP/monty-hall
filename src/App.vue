@@ -44,7 +44,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  border: 15px solid transparent;
+  border: 20px solid transparent;
+  border-top-width: 25px;
+  border-bottom-width: 25px;
 }
 .win {
   border-color: green !important;
